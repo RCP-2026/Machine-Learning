@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - ML2 - Confusion matrices</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/l2d-brain-logo.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./example.html">Dummy data</a></li><li><a href="./metrics.html">Metrics</a></li><li><a href="./score.html">Permutation score</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-4">
+                    Confusion matrices
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-4"><li><a href="#introduction">Introduction</a></li>
+                </ul>
+            </li><li><a href="./refinements.html">Further refinements</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../ML1/introduction.html">ML1</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Machine Learning 2</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://scryptiq.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    scryptIQ
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Confusion matrices <span class="module-tag">ML2</span>
+                </div>
+                <div class="module-body">
+                    <p>Another useful way to evaluate a model is to produce a <a href="https://en.wikipedia.org/wiki/Confusion_matrix">confusion matrix</a>. This is a matrix that displays the counts of true versus predicted classes, highlighting correct and incorrect predictions. It applies to binary classification and also generalises naturally to multiclass problems.<br><br>scikit-learn provides a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html">function to create a confusion matrix</a>. Here is an expanded function to simplify the visualisation of this matrix.</p><h4>Imports</h4>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-15">from itertools import product
+
+from matplotlib.pyplot import show, subplots
+
+from numpy import asarray, newaxis
+
+from sklearn.ensemble import AdaBoostClassifier, ExtraTreesClassifier, RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.datasets import make_circles
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split, permutation_test_score
+from sklearn.svm import LinearSVC, SVC
+from sklearn.tree import DecisionTreeClassifier</code></pre>
+            </div>
+            
+        </div>
+        <p>Define our dictionary of classifers:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-16">RANDOM_STATE = 111
+
+classifiers = {
+    &#x27;Random Forest&#x27;: RandomForestClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Random Forest)&#x27;: AdaBoostClassifier(RandomForestClassifier(random_state=RANDOM_STATE)),
+    &#x27;Extra Trees&#x27;: ExtraTreesClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Extra Tree)&#x27;: AdaBoostClassifier(ExtraTreesClassifier(random_state=RANDOM_STATE)),
+    &#x27;Decision Tree&#x27;: DecisionTreeClassifier(random_state=RANDOM_STATE),
+    &#x27;SVC (RBF)&#x27;: SVC(random_state=RANDOM_STATE),
+    &#x27;SVC (Linear)&#x27;: LinearSVC(random_state=RANDOM_STATE),
+    &#x27;Multi-layer Perceptron&#x27;: MLPClassifier(max_iter=5000, random_state=RANDOM_STATE)
+}</code></pre>
+            </div>
+            
+        </div>
+        <p>Generate our data and our <code>train_test_split</code>:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-17">X, y = make_circles(n_samples=500, factor=0.5, noise=.3, random_state=RANDOM_STATE)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, random_state=RANDOM_STATE, shuffle=True)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 1: name &#x27;RANDOM_STATE&#x27; is not defined</pre></div>
+        </div>
+        <h4>Confusion matrix plotting function</h4>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-18">def plot_confusion_matrix(y_test, y_pred, classes, normalize=False, ax=None):
+    &quot;&quot;&quot;
+    This function prints and plots the confusion matrix.
+    y_test (array)
+    y_pred (array)
+    classes (array)
+    normalize (bool) Normalize the results (True), or show them as integer numbers (False).
+    ax Visualization axis.
+    The function is an adaptation of a scikit-learn example.
+    &quot;&quot;&quot;
+
+    cm = confusion_matrix(y_test,y_pred)
+    n_classes = len(classes)
+
+    if normalize:
+        cm = asarray(cm).astype(&#x27;float32&#x27;) /cm.sum(axis=1)[:, newaxis]
+
+    if not ax:
+        fig, ax = subplots()
+
+    ticks = range(n_classes)
+    ax.imshow(cm, interpolation=&#x27;nearest&#x27;, cmap=&#x27;Blues&#x27;)
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(classes, rotation=90)
+    ax.set_yticks(ticks)
+    ax.set_yticklabels(classes)
+    fmt = &#x27;.2f&#x27; if normalize else &#x27;d&#x27;
+    thresh = 3*cm.max() / 4
+    cm_dim = cm.shape
+
+    # Matrix indices:
+    indices_a = range(cm_dim[0])
+    indices_b = range(cm_dim[1])
+    # Cartesian product of matrix indices:
+    indices = product(indices_a, indices_b)
+    fmt = &#x27;.2f&#x27; if normalize else &#x27;d&#x27;
+
+    for ind_a, ind_b in indices:
+      label = format(cm[ind_a, ind_b], fmt)
+      color = &quot;white&quot; if cm[ind_a, ind_b] &gt; thresh else &quot;black&quot;
+      ax.text(ind_b, ind_a, label, ha=&quot;center&quot;, color=color)
+    ax.set_ylabel(&#x27;True label&#x27;)
+    ax.set_xlabel(&#x27;Predicted label&#x27;)
+
+    return ax</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-19">class_names = (&#x27;False (0)&#x27;, &#x27;True (1)&#x27;)
+
+fig, axes = subplots(figsize=(16, 9), ncols=4, nrows=2, sharey=True, sharex=True)
+
+
+for ax, (name, clf) in zip(axes.ravel(), classifiers.items()):
+
+    clf.fit(X_train, y_train)
+
+    y_pred = clf.predict(X_test)
+
+    plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True, ax=ax)
+
+    ax.set_title(name, fontsize=10);
+
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 8: name &#x27;classifiers&#x27; is not defined</pre><img src="data:image/png;base64,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" class="output-image" width="1302" height="742" /></div>
+        </div>
+        <p>Ideally, the diagonal fields of the confusion matrix will be as bright (or as large in value) as possible, while the off-diagonal fields will be as dark (or as close to zero) as possible. The diagonal entries represent correct classifications: <em>true negatives</em> in the top-left and <em>true positives</em> in the bottom-right. <em>High values</em> here indicate that the model is <em>accurately predicting both classes</em>.<br><br>Contrastingly, the off-diagonal squares represent misclassifications. The top-right cell corresponds to <em>false positives</em>, where negative samples are incorrectly predicted as positive; while the bottom-left cell corresponds to <em>false negatives</em>, where positive samples are incorrectly predicted as negative. <em>Low values</em> in these cells indicate that the model makes few classification errors, which is the desired outcome.</p>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./score.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./refinements.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    

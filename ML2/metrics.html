@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - ML2 - Metrics</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/l2d-brain-logo.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./example.html">Dummy data</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-2">
+                    Metrics
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-2"><li><a href="#introduction">Introduction</a></li><li><a href="#average-precision-vs--auc">Average precision vs. AUC</a></li>
+                </ul>
+            </li><li><a href="./score.html">Permutation score</a></li><li><a href="./matrix.html">Confusion matrices</a></li><li><a href="./refinements.html">Further refinements</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../ML1/introduction.html">ML1</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Machine Learning 2</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://scryptiq.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    scryptIQ
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Metrics <span class="module-tag">ML2</span>
+                </div>
+                <div class="module-body">
+                    <p>We already used the score to evaluate the model performance. Here are some further metrics used in machine learning.<br><br><strong>Accuracy</strong> is a metric that evaluates the integrity of the model by comparing true labels with their predicted counterparts. It produces a value between 0 and 1, where 1 is the best possible outcome, and $1 / n_{classes}$ represents the probability of a random guess. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html">the Scikit-learn documentation for the accuracy_score.</a> The mathematical formula can be found in the <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#accuracy-score">metrics and scoring section of the documentation</a>.<br><br><strong>Recall</strong> is a metric that evaluates the ability of a classification model to find true positive labels. The measure produces a scalar value between 0 and 1, where 1 is the perfect outcome. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html">the scikit-learn documentation for the recall_score</a>. The recall is the percentage of true predictions of the overall number of predictions. It is also known as <em>sensitivity</em>.<br><br><strong>Average Precision</strong>, also referred to as AP, is a metric that produces a scalar value for the precision-recall curve between and with being the outcome. The metric obtains this value by weighing:<br><ul class="nested-list"><li>the mean of precisions (P) at each threshold (n),</li><br><li>the increase in recall (R) from the previous threshold (n-1).</li></ul>The metric is mathematically defined as follows:<br><br>$$ AP = \sum_{n}^{}(R_n - R_{n-1}) \cdot P $$</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-6">from numpy.random import seed, uniform
+from numpy import arange, array, c_, linspace, mean, mgrid
+from matplotlib.pyplot import subplots, axes, scatter, xticks, show
+
+from sklearn.metrics import recall_score
+from sklearn.datasets import make_circles
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier, ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import LinearSVC, SVC
+from sklearn.tree import DecisionTreeClassifier</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-7">RANDOM_STATE = 111
+
+seed(RANDOM_STATE)
+
+X, y = make_circles(n_samples=500, factor=0.5, noise=.3, random_state=RANDOM_STATE)
+
+feature_1, feature_2 = 0, 1
+ft_min, ft_max = X.min(), X.max()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;seed&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-8">classifiers = {
+    &#x27;Random Forest&#x27;: RandomForestClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Random Forest)&#x27;: AdaBoostClassifier(RandomForestClassifier(random_state=RANDOM_STATE)),
+    &#x27;Extra Trees&#x27;: ExtraTreesClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Extra Tree)&#x27;: AdaBoostClassifier(ExtraTreesClassifier(random_state=RANDOM_STATE)),
+    &#x27;Decision Tree&#x27;: DecisionTreeClassifier(random_state=RANDOM_STATE),
+    &#x27;SVC (RBF)&#x27;: SVC(random_state=RANDOM_STATE),
+    &#x27;SVC (Linear)&#x27;: LinearSVC(random_state=RANDOM_STATE),
+    &#x27;Multi-layer Perceptron&#x27;: MLPClassifier(max_iter=5000, random_state=RANDOM_STATE)
+}</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 2: name &#x27;RandomForestClassifier&#x27; is not defined</pre></div>
+        </div>
+        
+                </div>
+            </div>
+            
+            <div class="module-card" id="average-precision-vs--auc">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Average precision vs. AUC</h3>
+                        <p>As you may have noticed, the AUC metric also evaluates the area under the precision-recall curve using the trapezoid rule and with linear interpolation. The interpolation, however, may cause the resulting output to be better than it actually is. In other words, the AUC measure evaluates the outcome rather optimistically.<br><br>Precision is also called the <em>positive predictive value</em>.<br><br><strong>F1 Score</strong>: Another useful metric to evaluate a classification model that relies on precision and recall is the F1 Score, see the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html">scikit-learn documentation</a>.<br><br>It is mathematically defined as:<br><br>$$ F_1 = 2 \cdot \frac{P\cdot R}{P+R} $$<br><br>where $P$ and $R$ represent precision and recall, respectively. Wikipedia has a <a href="https://en.wikipedia.org/wiki/Precision_and_recall">nice summary of the measures and connections between them</a>. In scikit-learn, these measures can be used in a standardised fashion. Here is an example using the <code>recall_score</code>.<br><br>Let&#x27;s start by again performing our <code>train_test_split</code> and defining our two-dimensional state-space grid:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-9">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, random_state=RANDOM_STATE, shuffle=True)
+
+ft_min, ft_max = -1.5, 1.5
+
+# Constructing (2 grids x 300 rows x 300 cols):
+grid_1, grid_2 = mgrid[ft_min:ft_max:.01, ft_min:ft_max:.01]
+
+# We need only the shape for one of the grids (i.e. 300 x  300):
+grid_shape = grid_1.shape
+
+# state-space grid for testing
+new_obs = c_[grid_1.ravel(), grid_2.ravel()]
+
+contour_levels = linspace(0, 1, 6)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;train_test_split&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-10">fig, all_axes = subplots(figsize=[15, 5], ncols=4, nrows=2, sharey=True, sharex=True)
+
+for ax, (name, clf) in zip(all_axes.ravel(), classifiers.items()):
+
+    # Training the model using training data:
+    clf.fit(X_train, y_train)
+
+    y_pred_gr = clf.predict(new_obs)
+    y_pred_grid = y_pred_gr.reshape(grid_shape)
+
+    y_predicted = clf.predict(X_test)
+    
+    # Evaluating the score using test data:
+    score = clf.score(X_test, y_test)
+    recall = recall_score(y_test, y_predicted)
+
+    # Scattering the test data only:
+    ax.scatter(X_test[:, feature_1], X_test[:, feature_2], c=y_test, s=4, cmap=&#x27;bwr&#x27;, marker=&#x27;.&#x27;)
+    ax.contourf(grid_1, grid_2, y_pred_grid, cmap=&#x27;gray_r&#x27;, alpha=.2, levels=contour_levels)
+
+    ax.set_ylim(ft_min, ft_max)
+    ax.set_xlim(ft_min, ft_max)
+    ax.set_yticks([-1.5, 0, 1.5])
+    ax.set_xticks([-1.5, 0, 1.5])
+
+    label = &#x27;{} - Recall: {:.2f}&#x27;.format(name, recall)
+    ax.set_title(label , fontsize=10);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;subplots&#x27; is not defined</pre></div>
+        </div>
+        <h4>Reducing Bias on Test Data</h4><p>Whilst <code>scikit-learn</code> provides us with a dedicated function to obtain accuracy, the value it provides depends on how our training and test data have been split. Using the train-test-split, we can randomly shuffle the data to address this very problem. However, this implicitly assumes that our original data followed a specific distribution which is best represented by shuffling the data. That may not always be the case.<br><br>In practice, we can never fully eliminate this type of bias. What we can do, however, is to split, shuffle, and permute the samples in the original dataset repeatedly to minimise the likelihood of bias.</p>
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./example.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./score.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    

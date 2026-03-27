@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - ML2 - Further refinements</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/l2d-brain-logo.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./example.html">Dummy data</a></li><li><a href="./metrics.html">Metrics</a></li><li><a href="./score.html">Permutation score</a></li><li><a href="./matrix.html">Confusion matrices</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-5">
+                    Further refinements
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-5"><li><a href="#introduction">Introduction</a></li><li><a href="#imports">Imports</a></li><li><a href="#make-classification">make_classification</a></li><li><a href="#normalisation">Normalisation</a></li><li><a href="#hyperparameter-tuning">Hyperparameter tuning</a></li>
+                </ul>
+            </li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../ML1/introduction.html">ML1</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Machine Learning 2</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://scryptiq.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    scryptIQ
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Further refinements <span class="module-tag">ML2</span>
+                </div>
+                <div class="module-body">
+                    <h3>Learning Objectives</h3>
+                    <div class="learning-outcomes">
+                        <div class="outcome-item">
+                    <span class="outcome-number">1</span>
+                    <span class="outcome-text">How to normalise data for consistent data ranges</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">2</span>
+                    <span class="outcome-text">Grid searching for hyperparameter tuning</span>
+                </div>
+                    </div>
+                    <h3>Introduction</h3>
+                    <p>Once we decide what algorithm to use, we start by training that algorithm with its default settings and evaluate the results. If not satisfied, we can make further adjustments to the <strong>hyperparameters</strong> of the algorithm to improve the results.<br><br>As always in machine learning, it is of great importance that we avoid overfitting, i.e. maintain the generalisability of the model whilst improving its performance.<br><br>We start by creating a classification problem with 3 features and 2 labels using the <code>make_classification</code> function. Data are now displayed in pseudo-3-D.</p>
+                </div>
+            </div>
+            
+            <div class="module-card" id="imports">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Imports</h3>
+                        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-20">from mpl_toolkits.mplot3d import Axes3D
+
+from numpy import amax, array
+
+from matplotlib.pyplot import subplots, axes, scatter, xticks, show
+
+from sklearn.metrics import recall_score
+from sklearn.preprocessing import Normalizer
+from sklearn.datasets import make_circles, make_classification
+from sklearn.model_selection import train_test_split, permutation_test_score, StratifiedShuffleSplit, GridSearchCV
+from sklearn.ensemble import AdaBoostClassifier, ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import LinearSVC, SVC
+from sklearn.tree import DecisionTreeClassifier</code></pre>
+            </div>
+            
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="make-classification">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>make_classification</h3>
+                        <p>With <code>make_classification</code>, we generate a dataset with known structure that is well suited for illustrating classification concepts. Each data point is therefore represented as a <em>vector</em> in a 3-dimensional feature space, with its label indicating class membership. By controlling parameters such as the number of informative features, class separation and the random state, we can generate a dataset with known structure.<br><br>Although the data live in a 3-dimensional feature space, we visualise them here in a simplified, pseudo-3D manner by plotting the distributions of feature values. This allows us to inspect how the individual features are distributed and how much overlap exists between them, without requiring a full, 3-D scatter plot. This allows us to surmise underlying structure in the data.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-21">RANDOM_STATE = 111
+
+X, y = make_classification(
+    n_samples=500,
+    n_features=3,
+    n_classes=2,
+    n_informative=2,
+    n_redundant=0,
+    n_repeated=0,
+    n_clusters_per_class=2,
+    class_sep=.7,
+    scale=3,
+    random_state=RANDOM_STATE
+)
+
+fig, ax = subplots()
+
+ax.hist(X);
+ax.set_xlabel(&#x27;Value&#x27;)
+ax.set_ylabel(&#x27;Count&#x27;)
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 5: name &#x27;make_classification&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-22">fig, ax = subplots(figsize=(10, 8), subplot_kw=dict(projection=&#x27;3d&#x27;))
+
+ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, s=5, cmap=&#x27;bwr&#x27;);
+show()
+
+fig, axes = subplots(figsize=(12, 3), ncols=3, sharex=True, sharey=True)
+
+axes[0].scatter(X[:, 0], X[:, 1], c=y, s=2, cmap=&#x27;bwr&#x27;)
+axes[1].scatter(X[:, 0], X[:, 2], c=y, s=2, cmap=&#x27;bwr&#x27;)
+axes[2].scatter(X[:, 1], X[:, 2], c=y, s=2, cmap=&#x27;bwr&#x27;);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;subplots&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="info-box note-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                NOTE
+            </div>
+            <div class="box-content">
+                <p>Note the setting up of 3D axis. Some examples with code to learn 3D plotting are <a href="https://matplotlib.org/stable/users/explain/toolkits/mplot3d.html">provided in these tutorials</a>.</p>
+            </div>
+        </div>
+        <p>We can now go ahead and use our classifier dictionary – which contains the classifiers with their default settings – to train and evaluate the models.<br><br>We use the train-test split to evaluate the performance.<br><br>Let&#x27;s first re-define our classifier dictionary.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-23">RANDOM_STATE = 111
+
+classifiers = {
+    &#x27;Random Forest&#x27;: RandomForestClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Random Forest)&#x27;: AdaBoostClassifier(RandomForestClassifier(random_state=RANDOM_STATE)),
+    &#x27;Extra Trees&#x27;: ExtraTreesClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Extra Tree)&#x27;: AdaBoostClassifier(ExtraTreesClassifier(random_state=RANDOM_STATE)),
+    &#x27;Decision Tree&#x27;: DecisionTreeClassifier(random_state=RANDOM_STATE),
+    &#x27;SVC (RBF)&#x27;: SVC(random_state=RANDOM_STATE),
+    &#x27;SVC (Linear)&#x27;: LinearSVC(random_state=RANDOM_STATE),
+    &#x27;Multi-layer Perceptron&#x27;: MLPClassifier(max_iter=5000, random_state=RANDOM_STATE)
+}</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 6: name &#x27;RandomForestClassifier&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-24">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.8, random_state=RANDOM_STATE, shuffle=True)
+
+for name, clf in classifiers.items():
+    clf.fit(X_train, y_train)
+    score = clf.score(X_test, y_test)
+    print(&#x27;{:&lt;30} Score: {:.2f}&#x27;.format(name, score))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;train_test_split&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/Vo9eBk9P9rk"
+                width="560"
+                height="315"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="normalisation">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Normalisation</h3>
+                        <p>Depending on the nature of the data, it might be beneficial to normalise the data before fitting a classifier. This is widely done in machine learning but needs thought in each case.<br><br>Normalisation can be done in various ways. One common way to normalise data is to require that they have mean 0 and variance 1. This is used for example, when calculating the Pearson correlation coefficient. Another popular way in machine learning is to normalise data to Euclidean norm 1. For a data point in an n-dimensional feature space (n is the number of features), the Euclidean norm of a single point (one sample or row) is normalised such that the distance of the point from the origin is 1.<br><br>Let us first see an example: some data points are spread between 1 and 4.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-25">some_data = array([[1, 4], [3, 1], [4, 4], [2, 3]])
+
+norm_skl         = Normalizer()
+some_data_normed = norm_skl.fit_transform(some_data)
+
+print(&#x27;Normalised data:&#x27;, &#x27;\n&#x27;, some_data_normed)
+
+
+fig, ax = subplots(nrows=1, ncols=2)
+
+scaling = amax(some_data)*1.1
+
+ax[0].scatter(some_data[:, 0], some_data[:, 1])
+ax[0].set_xlim(0, scaling)
+ax[0].set_ylim(0, scaling)
+ax[0].set_xlabel(&#x27;Some data&#x27;)
+
+ax[1].scatter(some_data_normed[:, 0], some_data_normed[:, 1], c=&#x27;r&#x27;)
+ax[1].set_xlim(0, scaling)
+ax[1].set_ylim(0, scaling);
+ax[1].set_xlabel(&#x27;Normalised data&#x27;)
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;array&#x27; is not defined</pre></div>
+        </div>
+        <p>Effectively, all normalised data are positioned on a circle around the origin with radius 1. Depending on correlations existing between the features this leads to different distortions of the original data.<br><br>Let us now apply this normalisation to our artificial dataset.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-26">norm = Normalizer()
+
+X_normed = norm.fit_transform(X)
+
+fig, ax = subplots(figsize=(8, 8), subplot_kw=dict(projection=&#x27;3d&#x27;))
+
+ax.scatter(X_normed[:, 0], X_normed[:, 1], X_normed[:, 2], c=y, s=5, cmap=&#x27;bwr&#x27;);
+ax.view_init(30, 50);
+show()
+
+fig, axes = subplots(figsize=(10, 3), ncols=3, sharex=True, sharey=True)
+
+axes[0].scatter(X_normed[:, 0], X_normed[:, 1], c=y, s=2, cmap=&#x27;bwr&#x27;)
+axes[1].scatter(X_normed[:, 0], X_normed[:, 2], c=y, s=2, cmap=&#x27;bwr&#x27;)
+axes[2].scatter(X_normed[:, 1], X_normed[:, 2], c=y, s=2, cmap=&#x27;bwr&#x27;);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;Normalizer&#x27; is not defined</pre></div>
+        </div>
+        <p>The normalisation projects the data on the unit sphere. And now we can do the training on the normalised data:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-27">X_train, X_test, y_train, y_test = train_test_split(X_normed, y, test_size=.8, random_state=RANDOM_STATE, shuffle=True)
+
+for name, clf in classifiers.items():
+    clf.fit(X_train, y_train)
+    score = clf.score(X_test, y_test)
+    print(&#x27;{:&lt;30} Score: {:.2f}&#x27;.format(name, score))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;train_test_split&#x27; is not defined</pre></div>
+        </div>
+        <p>Due to the homogeneous nature of the artificial data, the results here are comparable for the data and their normalised version. But this may change when using data with inconsistent distributions of the columns.<br><br>For an example, see the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html#sklearn.datasets.load_breast_cancer">breastcancer data</a> used in the assignment.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="hyperparameter-tuning">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Hyperparameter tuning</h3>
+                        <p>Once we decide on what algorithm to use, we often start by training that algorithm with its default settings and evaluate the results. If not satisfied, we can go further and make adjustments to the hyperparameters of the algorithm to improve the results.<br><br>As always in machine learning, it is of great importance that we maintain the generalisability of our model whilst improving its performance. We use the data from the above classification problem with 3 features and 2 labels.</p><h4>Progressive adjustment</h4><p>After we have compared original and normalised data and obtained their scores, we now can try to progressively improve the performance of the algorithms. Each classification algorithm uses a unique set of hyperparameters, the details of which are outlined in their respective documentations on <code>scikit-learn</code>. The optimum parameters are those that produce the best fit whilst maintaining the generalisability of a model. One way to obtain the optimum settings is to test different parameters and compare the model scores over and over again.<br><br>However, as outlined before, by doing so we may risk <em>leaking</em> our test data, and end up over-fitting the model to the test data. (We also learned above that we can use different cross-validators to address this problem.)<br><br><code>scikit-learn</code> provides us with a tool entitled <code>GridSearchCV</code> to define different values for different parameters.<br><br>It then applies different combinations of parameters to the model and evaluates the outcome using data that it generates from a cross-validation algorithm. Once finished, it provides us with the parameters that produce the best score for our data. This is referred to as progressive adjustment.<br><br>For demonstration, we use SVC (rbf) as a classifier. With certain problems, its training may lead to poor results with the default parameters.</p>
+        <div class="info-box note-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                NOTE
+            </div>
+            <div class="box-content">
+                <p>Note that this process can be lengthy, and may need to be refined several times, so it is a good idea to set <code>n_jobs=-1</code> and thereby engaging parallel computing, and making full use of all the available cores of our computer&#x27;s processor.</p>
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-28">clf = SVC(kernel=&#x27;rbf&#x27;, C=1, gamma=100, tol=0.0001)
+
+clf.fit(X_train, y_train)
+
+score = clf.score(X_test, y_test)
+
+print(&#x27;{:&lt;30} Score: {:.2f}&#x27;.format(&#x27;SVC (RBF)&#x27;, score))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;SVC&#x27; is not defined</pre></div>
+        </div>
+        <p>Progressive adjustment of some of the parameters may lead to an improved model. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html">Check the documentation</a> for the meaning and the default values of regularisation parameters <code>C</code>, kernel coefficient <code>gamma</code>, and tolerance setting <code>tol</code>.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-29">param_grid = dict(C=[1e-4, 1e-3, 1e-2, 1e-1, 1, 10],
+                  gamma=[100, 1000, 10000, 100000],
+                  tol=[1e-4, 1e-3, 1e-2, 1e-1])
+
+cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=RANDOM_STATE)
+clf = SVC(kernel=&#x27;rbf&#x27;, random_state=RANDOM_STATE)
+
+grid = GridSearchCV(clf, param_grid=param_grid, cv=cv, n_jobs=1)
+
+grid.fit(X, y)
+
+print(&quot;ORIGINAL: Best parameters {}   Score: {:.2f}&quot;.format(grid.best_params_, grid.best_score_))
+
+grid.fit(X_normed, y)
+
+print(&quot;NORMED:   Best parameters {}    Score {:.2f}&quot;.format(grid.best_params_, grid.best_score_))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 7: name &#x27;StratifiedShuffleSplit&#x27; is not defined</pre></div>
+        </div>
+        <p>In this case, while both optimised scores are better than the original one, there is also a notable improvement when using the normalised data. Let us similarly check the Random Forest classifier, first with default settings.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-30">clf = RandomForestClassifier(random_state=RANDOM_STATE)
+
+clf.fit(X_train, y_train)
+
+score = clf.score(X_test, y_test)
+
+print(&#x27;{:&lt;30} Score: {:.2f}&#x27;.format(&#x27;Random Forest&#x27;, score))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;RandomForestClassifier&#x27; is not defined</pre></div>
+        </div>
+        <p><br>And now a grid over <a href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html">some of its parameters</a>.<br><br></p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-31">param_grid = dict(
+    n_estimators=[5, 10, 15, 20, 50, 60, 70],
+    max_features=[None, &#x27;sqrt&#x27;, &#x27;log2&#x27;],
+    min_samples_split=[2, 3, 4, 5],
+    max_depth=[1, 2, 3, 4]
+)
+
+cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=RANDOM_STATE)
+
+clf = RandomForestClassifier(random_state=RANDOM_STATE)
+
+grid = GridSearchCV(clf, param_grid=param_grid, cv=cv, n_jobs=1)
+
+grid.fit(X, y)
+
+print(&quot;ORIGINAL: Best parameters {}   Score: {:.2f}&quot;.format(grid.best_params_, grid.best_score_))
+
+grid.fit(X_normed, y)
+
+print(&quot;NORMED:   Best parameters {}    Score {:.2f}&quot;.format(grid.best_params_, grid.best_score_))</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 10: name &#x27;StratifiedShuffleSplit&#x27; is not defined</pre></div>
+        </div>
+        <p>In this case, our (arbitrary) search did not lead to a substantial improvement. This shows that the default settings are in fact a good starting point.</p><h4>Leakage in progressive adjustments</h4><p>We have already highlighted unequivocally the importance of not exposing our test data to our model during the training process; but where does training end? After deciding on an algorithm, we often attempt to improve its performance by adjusting its hyperparameters as done above. We make these adjustments on our model repeatedly until we obtain optimal results in a specific metric that scores the performances based exclusively on our test data.<br><br>In such cases, we risk <em>leaking</em> our test data and thereby over-fit our model to the test data through progressive adjustments. This means that the evaluation metrics on the generalisability of our model are no longer reliable. One way to address this problem is to split our original data into 3 different datasets: training, test, and validation. Whilst this is a valid approach that may be used in specific circumstances, it might also introduce new problems, e.g. after splitting the available data into 3 subsets, there might just not be enough data to train the classifier properly.<br><br>See for example the discussion in part 2 of this <a href="https://www.brainstimjrnl.com/article/S1935-861X(21">paper on predictive modelling for brain stimulation</a>00236-9/fulltext). The above leaking is there referred to as &quot;snooping&quot;.</p>
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./matrix.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./assignment.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    

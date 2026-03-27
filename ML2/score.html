@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - ML2 - Permutation score</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/l2d-brain-logo.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./example.html">Dummy data</a></li><li><a href="./metrics.html">Metrics</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-3">
+                    Permutation score
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-3"><li><a href="#introduction">Introduction</a></li><li><a href="#setup">Setup</a></li><li><a href="#permutation-score">Permutation Score</a></li>
+                </ul>
+            </li><li><a href="./matrix.html">Confusion matrices</a></li><li><a href="./refinements.html">Further refinements</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../ML1/introduction.html">ML1</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Machine Learning 2</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://scryptiq.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    scryptIQ
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Permutation score <span class="module-tag">ML2</span>
+                </div>
+                <div class="module-body">
+                    <h3>Learning Objectives</h3>
+                    <div class="learning-outcomes">
+                        <div class="outcome-item">
+                    <span class="outcome-number">1</span>
+                    <span class="outcome-text">  Introducing different types of metrics for model evaluation.</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">2</span>
+                    <span class="outcome-text">  Understanding the permutation score.</span>
+                </div>
+                    </div>
+                    <h3>Introduction</h3>
+                    <p>When dealing with biological and medical data, the results of machine learning often are not clear-cut. The question remains whether or not to trust a predictor as being truly above chance levels. An effective technique to address this is to randomly shuffle the labels independently of the data. I.e. we permute only the labels, and check whether the classification score actually decreases.<br><br>The <strong>permutation score</strong> then quantifies how trustworthy the result with the correct labels is. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.permutation_test_score.html">the scikit-learn documentation</a> for details.<br><br>Now that we know about evaluation metrics, we are set to properly begin the evaluation process. We can use so-called cross-validators for testing the models if a test is run many times on data with differently permuted labels. To facilitate this, scikit-learn provides the function <code>permutation_test_score</code>.</p>
+                </div>
+            </div>
+            
+            <div class="module-card" id="setup">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Setup</h3>
+                        
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/JJ_5Dc1Tcg4"
+                width="560"
+                height="315"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        
+        <div class="info-box note-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                NOTE
+            </div>
+            <div class="box-content">
+                <p>The process of cross-validation is computationally expensive, as is the process of repeatedly permuting, fitting, and testing our models. In this context, we will be using both processes to complement each other. This makes the operation time-consuming and slow.</p>
+            </div>
+        </div>
+        <p>When possible, scikit-learn provides us the with the ability to use multiple CPU cores to speed up intensive computations through multiprocessing.<br><br>Where available, this can be achieved by setting the <code>n_jobs</code> argument of a function or a class to the number of CPU cores we wish to use.<br><br>Conveniently, it can be set to <code>n_jobs=-1</code> to use all available CPU cores (see e.g. the Hyperparameter Tuning section, below). Here, we have shown the use of only one core with <code>n_jobs=1</code> which is computationally slow. You can adjust it according to the machine you are using to make it faster.<br><br>The keyword argument <code>n_permutations</code> is set to 100 by default. You can speed the cross-validation up by choosing a smaller number.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-11">from numpy.random import seed, uniform
+from numpy import arange, array, c_, linspace, mean, mgrid
+from matplotlib.pyplot import subplots, axes, scatter, xticks, show
+
+from sklearn.metrics import recall_score
+from sklearn.datasets import make_circles
+from sklearn.model_selection import train_test_split, permutation_test_score
+from sklearn.ensemble import AdaBoostClassifier, ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import LinearSVC, SVC
+from sklearn.tree import DecisionTreeClassifier</code></pre>
+            </div>
+            
+        </div>
+        <p>Let&#x27;s define our classifier dictionary, again.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-12">RANDOM_STATE = 111
+
+classifiers = {
+    &#x27;Random Forest&#x27;: RandomForestClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Random Forest)&#x27;: AdaBoostClassifier(RandomForestClassifier(random_state=RANDOM_STATE)),
+    &#x27;Extra Trees&#x27;: ExtraTreesClassifier(random_state=RANDOM_STATE),
+    &#x27;AdaBoost (Extra Tree)&#x27;: AdaBoostClassifier(ExtraTreesClassifier(random_state=RANDOM_STATE)),
+    &#x27;Decision Tree&#x27;: DecisionTreeClassifier(random_state=RANDOM_STATE),
+    &#x27;SVC (RBF)&#x27;: SVC(random_state=RANDOM_STATE),
+    &#x27;SVC (Linear)&#x27;: LinearSVC(random_state=RANDOM_STATE),
+    &#x27;Multi-layer Perceptron&#x27;: MLPClassifier(max_iter=5000, random_state=RANDOM_STATE)
+}</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 6: name &#x27;RandomForestClassifier&#x27; is not defined</pre></div>
+        </div>
+        <p>And create our circular dataset, train and test splits:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-13">X, y = make_circles(n_samples=500, factor=0.5, noise=.3, random_state=RANDOM_STATE)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, random_state=RANDOM_STATE, shuffle=True)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 1: name &#x27;make_circles&#x27; is not defined</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="permutation-score">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Permutation Score</h3>
+                        <p>And let&#x27;s finally run the <code>permutation_test_score</code> function, and a visualisation of the score overlaid over histograms generated for each classifier:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-14">n_classes = 2
+
+chance = 1 / n_classes
+
+fig, axes = subplots(figsize=[16, 12], ncols=4, nrows=2, sharey=True, sharex=True)
+
+for ax, (name, clf) in zip(axes.ravel(), classifiers.items()):
+
+    score, permutation_scores, pvalue = permutation_test_score(clf, X, y, scoring=&quot;accuracy&quot;, n_jobs=1,n_permutations=100)
+
+    score_label = &#x27;Score: {:.3f}, (p={:.4f})&#x27;.format(score, pvalue)
+    chance_label = &#x27;Chance: {:.3f}&#x27;.format(chance)
+
+    ax.hist(permutation_scores)
+    ax.axvline(score,  c=&#x27;g&#x27;, label=score_label,  linewidth=3.0)
+    ax.axvline(chance, c=&#x27;r&#x27;, label=chance_label, linewidth=3.0)
+    ax.set_title(name, fontsize=10)
+    ax.legend(fontsize=8)
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 7: name &#x27;subplots&#x27; is not defined</pre></div>
+        </div>
+        <p>Apart from the linear SVC, all classifiers show a clear separation between the permutation test distribution and the observed data score. The blue bars on the histogram represent the <em>distribution of scores</em> obtained by repeatedly training the model on data with randomly permuted labels, which corresponds to the <em>performance expected by chance</em>. The red vertical line marks the <em>mean</em> of this null distribution, while the green vertical line shows the <strong>score</strong> achieved using the true, unpermuted labels.<br><br>For most classifiers, the observed data score lies well to the <em>right</em> of the distribution, indicating that the models are capturing actual, <em>meaningful structure</em> in the data, as opposed to fitting onto random noise. This separation is corroborated by the <em>low p-values</em> (p &lt; 0.01), which indicate that the probability of obtaining such a high score by chance alone, is very small.<br><br>By contrast, the linear SVC shows substantial overlap between the permutation distribution and the observed data score, with the green line lying close to the null distribution. This suggests that the <em>linear decision boundary is insufficient to model the non-linear structure of the data</em>, and its performance is <em>not</em> significantly better than chance, as reflected by the <em>higher p-value</em>.<br><br>Here is a <a href="https://scikit-learn.org/stable/auto_examples/model_selection/plot_permutation_tests_for_classification.html#sphx-glr-auto-examples-model-selection-plot-permutation-tests-for-classification-py">scikit-learn example using permutations with the Iris data</a>.</p>
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./metrics.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./matrix.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    
