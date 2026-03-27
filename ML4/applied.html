@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - ML4 - Exploring PCA</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/l2d-brain-logo.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./dimensionality.html">Dimensionality reduction</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-2">
+                    Exploring PCA
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-2"><li><a href="#introduction">Introduction</a></li><li><a href="#1-d-descriptions-with-pca">1-D descriptions with PCA</a></li><li><a href="#2-d-descriptions-with-pca">2-D descriptions with PCA</a></li><li><a href="#gene-expression-data">Gene expression data</a></li><li><a href="#visualisation">Visualisation</a></li><li><a href="#beyond-dimensionality-reduction">Beyond dimensionality reduction</a></li><li><a href="#resources">Resources</a></li><li><a href="#summary">Summary</a></li>
+                </ul>
+            </li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../ML1/introduction.html">ML1</a></li>
+            <li><a href="../ML2/introduction.html">ML2</a></li>
+            <li><a href="../ML3/introduction.html">ML3</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Machine Learning 4</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://scryptiq.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    scryptIQ
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Exploring PCA <span class="module-tag">ML4</span>
+                </div>
+                <div class="module-body">
+                    <h3>Learning Objectives</h3>
+                    <div class="learning-outcomes">
+                        <div class="outcome-item">
+                    <span class="outcome-number">1</span>
+                    <span class="outcome-text">Explain PCA as a geometric projection onto directions of maximal variance</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">2</span>
+                    <span class="outcome-text">Apply PCA to obtain one-dimensional and two-dimensional representations of data</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">3</span>
+                    <span class="outcome-text">Interpret principal components in terms of variance captured and orientation in feature space</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">4</span>
+                    <span class="outcome-text">Use explained variance ratios to assess information retained after dimensionality reduction</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">5</span>
+                    <span class="outcome-text">Select an appropriate number of principal components using variance-based heuristics</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">6</span>
+                    <span class="outcome-text">Apply PCA to high-dimensional biological data such as gene expression datasets</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">7</span>
+                    <span class="outcome-text">Recognise the limitations of PCA, including its linearity and sensitivity to feature scaling</span>
+                </div>
+                    </div>
+                    <h3>Introduction</h3>
+                    <p>In this section of the lesson, we&#x27;ll apply Principal Component Analysis (PCA) to some examples. As a <em>linear</em> dimensionality reduction technique, PCA represents data in terms of new <em>orthogonal</em> directions which capture maximal variance. Rather than describing samples using the original feature axes, PCA <em>re-expresses</em> the data as <em>projections</em> onto these principal directions, allowing dominant patterns and structure to be identified, more clearly.<br><br>By examining how variance is distributed across components, PCA provides both a compact representation of high-dimensional data and a quantitative basis for deciding how many dimensions are required to retain meaningful information.</p>
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/E0YytUSJsQY"
+                width="560"
+                height="315"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        
+                </div>
+            </div>
+            
+            <div class="module-card" id="1-d-descriptions-with-pca">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>1-D descriptions with PCA</h3>
+                        <p>Let us now use dimensionality reduction <code>PCA</code> to find the direction that captures maximal variance. For an n-dimensional dataset, PCA finds a set of <em>n</em> new features, ranked by the variance along each feature. See the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html">scikit-learn documentation</a> for information.<br><br>To get the best 1-D representation of data, we instantiate the class with one component (<em>n_components</em> = 1) to be returned, and transform the data to the feature space of that component.</p>
+        <div class="code-area">
+            <div class="code-collapse-header" onclick="toggleCodeCollapse('code-7')">
+                <span class="code-collapse-icon">▶</span>
+                <span class="code-collapse-label">Show code</span>
+            </div>
+            <div class="code-container code-fixed code-collapsed" id="code-7-container">
+                <pre><code class="language-python" id="code-7">from numpy import reshape, append, mean, pi, linspace, var, array, cumsum, arange
+from numpy.random import seed, multivariate_normal, binomial
+from numpy.linalg import norm
+
+from math import cos, sin, atan2
+from matplotlib.pyplot import subplots, xlabel, ylabel, scatter, title
+from matplotlib.pyplot import figure, plot, xticks, xlabel, ylabel, suptitle, show
+
+import glob
+from pathlib import Path
+from pandas import read_csv, DataFrame
+import csv
+
+RND_SEED = 7890
+seed(RND_SEED)
+
+# Set up 2D multivariate Gaussians
+means = [20, 20]
+
+cov_mat = [[1, .85], [.85, 1.5]] # 2x2 covariance matrix must be symmetric and positive-semidefinite(&gt;=0)
+
+# Generate data
+nSamples = 300
+
+data = multivariate_normal(means, cov_mat, nSamples)
+
+zdata = data - mean(data, axis=0)</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-8">from sklearn.decomposition import PCA
+
+# Initialize the PCA model
+pcaResults = PCA(n_components=1, whiten=False) # specify no. of components, and whether to standardize
+
+# Fit to data
+pcaResults = pcaResults.fit(data)
+
+# Transform the data, using our learned PCA representation
+dim1_data = pcaResults.transform(data)
+
+print( &quot;Size of new dataset: &quot;, dim1_data.shape )</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-stream">Size of new dataset:  (300, 1)
+</pre></div>
+        </div>
+        <p>From the fitted model &#x27;pcaResults&#x27; we can now get:<br><ul class="nested-list"><li>The fractional variance using <code>explained_variance_ratio_</code>. It tells us what fraction of the total variance is retained by the reduced 1-D description of the data.</li><br><li>The direction (angle) of this first PC as calculate from the arcus tangens <code>atan2</code> of the vector. You can compare it directly to the angle in the above plot.</li></ul></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="1-d-descriptions-with-pca">
+                <div class="module-body">
+                    <div class="module-section">
+                        
+        <div class="info-box practice-exercise-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                PRACTICE EXERCISE
+            </div>
+            <div class="box-content">
+                <p><strong>1.</strong></p>
+                <p>See Practice Exercise 2 in your GitHub repository&#x27;s <code>Practice_Exercises</code> folder, to practice what we&#x27;ve learned up to this point.</p>
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-9"># How much variance was captured compared to original data?
+print(&quot;Fractional variance captured by first PC: {:1.4f}.&quot;.format(pcaResults.explained_variance_ratio_[0]))
+
+vec1 = pcaResults.components_[0,:]
+print(&quot;Direction of PC1 is at angle = {:1.2f} radians&quot;.format(atan2(vec1[1],vec1[0])))
+</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-stream">Fractional variance captured by first PC: 0.8722.
+Direction of PC1 is at angle = 0.99 radians
+</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="2-d-descriptions-with-pca">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>2-D descriptions with PCA</h3>
+                        <p>Our dataset has two features. We can thus obtain two principal components. The two components must be orthogonal to each other (form a right angle). Let us get the corresponding vectors and plot them on the scatterplot.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-10"># Initialize the PCA model
+pcaResults = PCA(n_components=2, whiten=False) # specify no. of components, and whether to standardize
+
+# Fit to data
+pcaResults = pcaResults.fit(data)
+
+# Transform the data, using our learned PCA representation
+dim1_data = pcaResults.transform(data)
+
+print( &quot;Size of new dataset: &quot;, dim1_data.shape )
+
+print(pcaResults.components_)
+
+vec1 = pcaResults.components_[0,:]
+vec2 = pcaResults.components_[1,:]
+
+
+fig, ax = subplots(figsize=(6, 6))
+
+# Plot data and the feature direction
+ax.scatter(zdata[:, 0], zdata[:, 1]);
+ax.quiver([0], [0], vec1[0], vec1[1], scale=3, color=&#x27;r&#x27;);
+ax.quiver([0], [0], vec2[0], vec2[1], scale=3, color=&#x27;r&#x27;);
+
+ax.set_title(&#x27;Sample Data&#x27;, fontsize=16, fontweight=&#x27;bold&#x27;)
+ax.set_xlabel(&#x27;Dim 1&#x27;, fontsize=14); ax.set_xlim([-4,4]);
+ax.set_ylabel(&#x27;Dim 2&#x27;, fontsize=14); ax.set_ylim([-4,4]);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-stream">Size of new dataset:  (300, 2)
+[[ 0.54864625  0.8360546 ]
+ [ 0.8360546  -0.54864625]]
+</pre><img src="data:image/png;base64,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" class="output-image" width="544" height="554" /></div>
+        </div>
+        <p>The red arrows show the new coordinate system, defined by the principal components. It also shows that the more correlated the data are, the less information we lose by reducing the data representation using PCA.</p>
+        <div class="info-box note-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                NOTE
+            </div>
+            <div class="box-content">
+                <p>When reading about PCA you will come across the term <strong>Singular Value Decomposition (SVD)</strong>. As mentioned in the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html#sklearn.decomposition.PCA">scikit-learn documentation for PCA</a>, when you apply <code>PCA</code> the algorithm in the background uses SVD to return the results. The difference between the two is technical but SVD is the more general method. Wikipedia has as <a href="https://en.wikipedia.org/wiki/Principal_component_analysis#Singular_value_decomposition">mathematical introduction to PCA</a> which also discusses <a href="https://en.wikipedia.org/wiki/Principal_component_analysis#Singular_value_decomposition">the relationship to SVD</a>.</p>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="gene-expression-data">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Gene expression data</h3>
+                        <p>Now, we will use PCA to find a few features that capture most of the variability in the gene expression dataset. We arbitrarily start with 50 components assuming that this will include the important features.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-11"># Load all data
+nGenes = 1000 # keep only these genes for now
+
+filectr=0
+
+datapath = Path(&quot;./data/childhood_data&quot;)    #/relative/path/to/folder/with/data
+
+for txt in datapath.glob(&quot;*.txt&quot;):
+    b=read_csv(txt, sep=&#x27;\t&#x27;, usecols=[1])
+    b=reshape(b.values, (1,54675)) # each file is 1 observation sample i.e. 1 row.
+    if filectr==0:
+        coln =  read_csv(txt, sep=&#x27;\t&#x27;, usecols=[0])
+        a = b
+    else:
+        a=append( a, b, axis=0)
+    filectr+=1
+
+# convert 2D array to DataFrame
+geneData = DataFrame( data=a[:,range(nGenes)]- mean(a[:,range(nGenes)], axis=0), columns = coln.values[range(nGenes)])
+</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-12">nComp = 50 # Number of PCs to be returned
+#trainIndx = binomial(1,0.9,size=filectr)
+
+GenePCA = PCA(n_components=nComp, whiten=True)
+GenePCA = GenePCA.fit(geneData) #.values[trainIndx==1,:]</code></pre>
+            </div>
+            
+        </div>
+        <p>How many features should we retain? To investigate this question, we plot the total (cumulative) variance for retaining the top <em>k</em> modes. The more we use, the higher the cumulative variance.<br></p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-13">cumExpVar = cumsum(GenePCA.explained_variance_ratio_)
+fig = figure(figsize=(5, 5))
+im  = plot( range(nComp), cumExpVar )
+xticks(arange(0,nComp,5));
+xlabel( &#x27;Number of PCs&#x27;, fontsize=14);
+ylabel(&#x27;Cumulative explained variance&#x27;, fontsize=14);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;GenePCA&#x27; is not defined</pre></div>
+        </div>
+        <p>A common heuristic for choosing the number of components is by defining a set threshold for the total explained variance.<br><br>Thresholds commonly vary between 0.8-0.9, depending on the structure of the PCs, e.g. depending on whether there are a few top PCs or many small PCs, but also depending on the expected noise in data, and on the desirable accuracy of the reduced dataset. While a dimensionality reduction is convenient, it always loses some information.<br><br>As an example, we can check how many PCs we need to retain 99 % of the variance.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-14">threshold = 0.99
+
+# index of first PC whose cumulative variance reaches threshold
+index = [i for i, v in enumerate(cumExpVar) if v &gt;= threshold][0]
+keepPC = index + 1  # number of PCs to keep
+
+print(
+    &#x27;Number of features needed to explain {:1.2f} fraction of total variance is {:2d}. &#x27;
+    .format(threshold, keepPC)
+)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 6: name &#x27;cumExpVar&#x27; is not defined</pre></div>
+        </div>
+        <p>There are many alternative methods for estimating the number of features. These include:<br><ul class="nested-list"><li>Plot explained variance of individual PCs and cut off when there is a sharp drop/saturation in the values.</li><br><li>Cross-validation - Find number of PCs that maximize explained variance on held-out data (using a bi-cross validation scheme).</li><br><li>Visual inspection or interpretable PCs</li></ul></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="visualisation">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Visualisation</h3>
+                        <p>Now that we have selected the number of features to be used, we can see what the data along those features looks like, and visualise the reduced dataset.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-15">newGeneData = GenePCA.transform(geneData)[:, :keepPC]
+
+fig, ax = subplots(ncols=3, nrows=2, figsize=(18, 8))
+suptitle(&#x27;Data in new Feature space&#x27;, fontsize=20)
+
+ax[0, 0].scatter(newGeneData[:,0], newGeneData[:,1], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[0, 0].set_xlabel(&#x27;PC1&#x27;, fontsize=14); ax[0, 0].set_xlim([-2,2]);
+ax[0, 0].set_ylabel(&#x27;PC2&#x27;, fontsize=14); ax[0, 0].set_ylim([-2,2]);
+
+
+ax[0, 1].scatter(newGeneData[:,0], newGeneData[:,2], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[0, 1].set_xlabel(&#x27;PC1&#x27;, fontsize=14); ax[0, 1].set_xlim([-2,2]);
+ax[0, 1].set_ylabel(&#x27;PC3&#x27;, fontsize=14); ax[0, 1].set_ylim([-2,2]);
+
+
+ax[0, 2].scatter(newGeneData[:,0], newGeneData[:,3], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[0, 2].set_xlabel(&#x27;PC1&#x27;, fontsize=14); ax[0, 2].set_xlim([-2,2]);
+ax[0, 2].set_ylabel(&#x27;PC4&#x27;, fontsize=14); ax[0, 2].set_ylim([-2,2]);
+
+
+
+ax[1, 0].scatter(newGeneData[:,1], newGeneData[:,2], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[1, 0].set_xlabel(&#x27;PC2&#x27;, fontsize=14); ax[1, 0].set_xlim([-2,2]);
+ax[1, 0].set_ylabel(&#x27;PC3&#x27;, fontsize=14); ax[1, 0].set_ylim([-2,2]);
+
+
+ax[1, 1].scatter(newGeneData[:,1], newGeneData[:,3], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[1, 1].set_xlabel(&#x27;PC2&#x27;, fontsize=14); ax[1, 1].set_xlim([-2,2]);
+ax[1, 1].set_ylabel(&#x27;PC4&#x27;, fontsize=14); ax[1, 1].set_ylim([-2,2]);
+
+
+ax[1, 2].scatter(newGeneData[:,3], newGeneData[:,2], c=range(filectr), cmap=&#x27;summer&#x27;);
+ax[1, 2].set_xlabel(&#x27;PC4&#x27;, fontsize=14); ax[1, 2].set_xlim([-2,2]);
+ax[1, 2].set_ylabel(&#x27;PC3&#x27;, fontsize=14); ax[1, 2].set_ylim([-2,2]);
+
+show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 3: name &#x27;GenePCA&#x27; is not defined</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="beyond-dimensionality-reduction">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Beyond dimensionality reduction</h3>
+                        <p>After reducing the dataset from hundreds or thousands of genes to fewer features (PCs), it can be used:<br><ul class="nested-list"><li>To find groups of genes that seem to be co-regulated (using clustering).</li><br><li>To build classifiers to predict the likelihood of juvenile or late-onset rheumatoid disease. For example, one feature can be highly variable in the sampled population and therefore has high explained variance, but it may not be predictive for the current objective of predicting disease phenotype (e.g. eye pigmentation genes).</li><br><li>To find what combination of genes the top features correspond to.</li><br><li>To suggest what individual genes are most variable.</li><br><li>To discover co-expression patterns of multiple genes.</li></ul></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="beyond-dimensionality-reduction">
+                <div class="module-body">
+                    <div class="module-section">
+                        
+        <div class="info-box practice-exercise-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                PRACTICE EXERCISE
+            </div>
+            <div class="box-content">
+                <p><strong>2.</strong></p>
+                <p>See Practice Exercise 3 in your GitHub repository&#x27;s <code>Practice_Exercises</code> folder, to practice what we&#x27;ve learned up to this point.</p>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="when-does-pca-fail">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>When does PCA fail?</h3>
+                        <p>Although PCA is the first and simplest method of exploring high-dimensional datasets, there are important caveats to keep in mind:<br><ol class="nested-list"><li><em>PCA is a linear method</em></li></ol>Nonlinear patterns of co-expression will be seemingly broken up into many features. Thus, the ability to find whether genes are co-regulated may be reduced if the effects are nonlinear.<br><ol class="nested-list"><li><em>PCA depends on scaling of individual measurements.</em></li></ol>As PCA measures variance along different directions, changing the scale of one variable (for example from cm to mm, or fold-change to actual levels) may drastically change the dominant &quot;features&quot; extracted.<br><br>The lesson on clustering of images with Gaussian mixture models contained instructions to scale data. You can explore the original dataset of this lesson, to investigate how scaling of variables impacts the results.<br><ol class="nested-list"><li><em>Estimating number of features is heuristic, and depends on the purpose.</em></li></ol>The definition of what is the &#x27;relevant&#x27; number of features can depend on:<br><ul class="nested-list"><li>the signal-to-noise ratio in data. For example, noisier or smaller datasets make it harder to accurately estimate smaller PCs. In such cases, a more conservative threshold should be used.</li><br><li>the classifier or regression performance following the dimensionality reduction.</li></ul></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="resources">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Resources</h3>
+                        <p><ul class="nested-list"><li><a href="http://sebastianraschka.com/Articles/2015_pca_in_3_steps.html">Detailed tutorial on PCA</a></li><br><li><a href="https://towardsdatascience.com/dimension-reduction-techniques-with-python-f36ca7009e5c">Other methods for dimensionality reduction</a>:</li><br><li><a href="https://scikit-learn.org/stable/modules/decomposition.html">Matrix factorization methods</a></li><br><li><a href="https://scikit-learn.org/stable/modules/manifold.html">Manifold learning or topological methods</a></li><br><li><a href="https://scikit-learn.org/stable/modules/unsupervised_reduction.html">Example pipelines with Scikit-learn</a></li></ul>Dataset from:<br><br>Frank MB, Wang S, Aggarwal A, et al. <strong>Disease-associated pathophysiologic structures in pediatric rheumatic diseases show characteristics of scale-free networks seen in physiologic systems: implications for pathogenesis and treatment.</strong> _BMC Med Genomics. 2009;2:9._  Published 2009 Feb 23. doi:10.1186/1755-8794-2-9<br><br>Download data from: <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-GEOD-11083/">EBI</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="summary">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Summary</h3>
+                        <p>We introduced and looked at dimensionality reduction as a practical and conceptual response to the challenges posed by high-dimensional data. We observed how data can be re-expressed as projections onto orthogonal directions that capture maximal variance. By examining variance along different directions, PCA provides a principled way to identify dominant structure, reduce redundancy between correlated features, and construct lower-dimensional representations of complex datasets. The lessons demonstrate how explained variance can be used to guide the choice of dimensionality, while also highlighting the assumptions and limitations of PCA, including its linear nature and sensitivity to feature scaling. Together, these ideas establish PCA as a foundational tool for exploring, visualising, and simplifying high-dimensional biological data.</p>
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./dimensionality.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./assignment.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    
